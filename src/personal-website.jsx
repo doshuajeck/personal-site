@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Github, Linkedin, Mail, ExternalLink, Calendar, Tag, ArrowRight, Code, Palette, User } from 'lucide-react';
+import { Menu, X, Github, Mail, ExternalLink, Calendar, Tag, ArrowRight, Code, Palette, User } from 'lucide-react';
 import './tailwind.css';
 
 export default function PersonalWebsite() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +17,81 @@ export default function PersonalWebsite() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Load blog posts from text files
+  useEffect(() => {
+    const loadBlogPosts = async () => {
+      try {
+        // List of blog files to load
+        // You can either hardcode these or use a manifest file
+        const blogFiles = [
+          'post1.txt',
+          'post2.txt',
+          'post3.txt'
+        ];
+
+        const posts = [];
+        
+        for (const file of blogFiles) {
+          try {
+            const response = await fetch(`/blog/${file}`);
+            if (response.ok) {
+              const content = await response.text();
+              const post = parseBlogPost(content);
+              if (post) {
+                posts.push(post);
+              }
+            }
+          } catch (error) {
+            console.error(`Error loading blog post ${file}:`, error);
+          }
+        }
+
+        // Sort by date (newest first)
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error('Error loading blog posts:', error);
+      } finally {
+        setBlogLoading(false);
+      }
+    };
+
+    loadBlogPosts();
+  }, []);
+
+  // Parse blog post from text file with |.| delimiter
+  const parseBlogPost = (content) => {
+    try {
+      const lines = content.split('\n');
+      const post = {};
+      
+      for (const line of lines) {
+        if (line.includes('|.|')) {
+          const [key, value] = line.split('|.|').map(s => s.trim());
+          
+          if (key === 'id') {
+            post.id = parseInt(value) || value;
+          } else if (key === 'tags') {
+            // Parse tags as comma-separated values
+            post.tags = value.split(',').map(tag => tag.trim());
+          } else {
+            post[key] = value;
+          }
+        }
+      }
+      
+      // Validate required fields
+      if (post.id && post.title && post.excerpt && post.date) {
+        return post;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error parsing blog post:', error);
+      return null;
+    }
+  };
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId);
@@ -33,63 +110,35 @@ export default function PersonalWebsite() {
     }
   };
 
-  // Sample blog posts
-  const blogPosts = [
-    {
-      id: 1,
-      title: "Building This Website with Claude",
-      excerpt: "A journey through creating a personal website using AI assistance, modern web technologies, and thoughtful design principles.",
-      date: "2026-02-07",
-      tags: ["Web Development", "React", "AI"],
-      readTime: "5 min read"
-    },
-    {
-      id: 2,
-      title: "The Art of Creative Coding",
-      excerpt: "Exploring the intersection of programming and artistic expression through generative art and interactive experiences.",
-      date: "2026-01-15",
-      tags: ["Creative Coding", "Art"],
-      readTime: "8 min read"
-    },
-    {
-      id: 3,
-      title: "Modern Web Design Trends",
-      excerpt: "An analysis of contemporary web design patterns and how they shape user experiences in 2026.",
-      date: "2025-12-20",
-      tags: ["Design", "UX"],
-      readTime: "6 min read"
-    }
-  ];
-
   // Sample portfolio items
   const portfolioItems = [
     {
       id: 1,
-      title: "Abstract Digital Series",
+      title: "Goomba",
       type: "image",
-      thumbnail: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
-      description: "Generative art exploration"
+      thumbnail: `/portfolio/goomba.jpg`,
+      description: "Created with Blender"
     },
     {
       id: 2,
-      title: "Motion Graphics Project",
+      title: "Life Flask",
       type: "video",
-      thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80",
-      description: "Animated visual storytelling"
+      thumbnail: `/portfolio/flask.jpg`,
+      description: "Created with Blender"
     },
     {
       id: 3,
-      title: "Photography Collection",
+      title: "Mage Staff",
       type: "image",
-      thumbnail: "https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=800&q=80",
-      description: "Urban landscape series"
+      thumbnail: `/portfolio/staff.jpg`,
+      description: "Created with Blender"
     },
     {
       id: 4,
-      title: "Interactive Installation",
+      title: "Neighbor",
       type: "image",
-      thumbnail: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-      description: "Mixed media experience"
+      thumbnail: `/portfolio/neighbor.jpg`,
+      description: "Created with Blender"
     }
   ];
 
@@ -97,27 +146,27 @@ export default function PersonalWebsite() {
   const projects = [
     {
       id: 1,
-      title: "Real-time Data Visualization",
-      description: "Interactive dashboard for analyzing complex datasets with D3.js and React",
-      tech: ["React", "D3.js", "Node.js", "WebSocket"],
-      github: "https://github.com",
-      demo: "https://example.com"
-    },
-    {
-      id: 2,
-      title: "Machine Learning Pipeline",
-      description: "End-to-end ML pipeline for image classification with deployment automation",
-      tech: ["Python", "TensorFlow", "Docker", "AWS"],
-      github: "https://github.com",
+      title: "GronkBot",
+      description: "A Rocket League AI using the RLBot framework",
+      tech: ["Python", "RLBot"],
+      github: "https://github.com/doshuajeck/GronkBot",
       demo: null
     },
     {
+      id: 2,
+      title: "Tinkering Turrets",
+      description: "A small Unity prototype experimenting with dynamic AI",
+      tech: ["Unity2D", "C#"],
+      github: "https://github.com/doshuajeck/Tinkering-Turrets",
+      demo: "https://mochiigato.itch.io/tinkeringturretsdemo"
+    },
+    {
       id: 3,
-      title: "Mobile App Development",
-      description: "Cross-platform mobile application built with React Native",
-      tech: ["React Native", "Firebase", "Redux"],
-      github: "https://github.com",
-      demo: "https://example.com"
+      title: "Contiguous Allocator",
+      description: "A C implementation of a contiguous memory allocator",
+      tech: ["C"],
+      github: "https://github.com/doshuajeck/ContiguousAllocator",
+      demo: null
     }
   ];
 
@@ -131,14 +180,14 @@ export default function PersonalWebsite() {
           <div className="flex items-center justify-between h-20">
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
-                Your Name
+                Mochi Network
               </h1>
             </div>
             
             {/* Desktop Navigation */}
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
-                {['home', 'about', 'blog', 'projects', 'portfolio'].map((section) => (
+                {['home', 'about', 'blog', 'projects', 'art'].map((section) => (
                   <button
                     key={section}
                     onClick={() => scrollToSection(section)}
@@ -170,7 +219,7 @@ export default function PersonalWebsite() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-slate-950/98 backdrop-blur-lg border-t border-teal-500/20">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {['home', 'about', 'blog', 'projects', 'portfolio'].map((section) => (
+              {['home', 'about', 'blog', 'projects', 'art'].map((section) => (
                 <button
                   key={section}
                   onClick={() => scrollToSection(section)}
@@ -199,13 +248,13 @@ export default function PersonalWebsite() {
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-6 animate-fade-in">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight">
-              <span className="block text-slate-100">Creative Developer</span>
+              <span className="block text-slate-100">Creative Solutions</span>
               <span className="block bg-gradient-to-r from-teal-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
-                & Digital Artist
+                & Artistic Advocacy
               </span>
             </h1>
             <p className="text-xl sm:text-2xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-              Crafting exceptional digital experiences at the intersection of technology and creativity
+              Crafting ethically-conscious designs in an increasingly unethical space
             </p>
             <div className="flex flex-wrap gap-4 justify-center pt-8">
               <button
@@ -239,20 +288,22 @@ export default function PersonalWebsite() {
           <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-xl p-8 lg:p-12">
             <div className="space-y-6 text-slate-300 leading-relaxed text-lg">
               <p>
-                Hello! I'm a passionate creative developer who bridges the gap between artistry and technology. 
-                With a strong foundation in both software engineering and digital design, I create experiences 
-                that are not only functional but also visually compelling and emotionally resonant.
+                Hello! I am a programmer by trade, not an artist. Despite my lack of artistic talent, I find
+                myself enamored with the creative process and have tried throughout my entire life to capture that
+                essence. As a fledgeling programmer, I fell in love with building software applications and the 
+                design that came with them. 
               </p>
               <p>
-                My journey in tech began with a curiosity about how things work, which evolved into a love for 
-                building elegant solutions to complex problems. Whether I'm developing a web application, 
-                creating generative art, or designing interactive experiences, I approach each project with 
-                meticulous attention to detail and a commitment to excellence.
+                As I grew as a software developer, I found niches within the industry that allowed for artistic
+                ability to be honed. I practiced design through video game development, aesthetic design through
+                web development, and have recently taken up 3D art as a hobby. In 2026, however, these two things
+                are increasingly at odds.
               </p>
               <p>
-                When I'm not coding or designing, you'll find me exploring new creative tools, contributing to 
-                open-source projects, or experimenting with emerging technologies. I believe in continuous 
-                learning and pushing the boundaries of what's possible at the intersection of code and creativity.
+                It is my philosophy that the arts are extremely important, and that we should maintain a strict
+                ethical code when encroaching on the art ecosystem. A balance of tech with art is what makes
+                software interesting to me, and I firmly believe that automating art would be a significant
+                loss for humanity. 
               </p>
             </div>
 
@@ -262,14 +313,14 @@ export default function PersonalWebsite() {
                   <Code size={28} className="text-teal-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-100 mb-2">Development</h3>
-                <p className="text-slate-400">Full-stack expertise with modern frameworks and tools</p>
+                <p className="text-slate-400">Technical expertise with modern frameworks and tools</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-500/10 rounded-full mb-4">
                   <Palette size={28} className="text-cyan-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-100 mb-2">Design</h3>
-                <p className="text-slate-400">Creating beautiful, intuitive user experiences</p>
+                <p className="text-slate-400">Composing beautiful and aesthetic interfaces</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-500/10 rounded-full mb-4">
@@ -290,11 +341,21 @@ export default function PersonalWebsite() {
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
               Blog & Articles
             </h2>
-            <p className="text-xl text-slate-400">Thoughts on technology, design, and creativity</p>
+            <p className="text-xl text-slate-400">My thoughts on a variety of subjects</p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {blogPosts.map((post, index) => (
+            {blogLoading ? (
+              <div className="col-span-full text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-teal-500/20 border-t-teal-500"></div>
+                <p className="mt-4 text-slate-400">Loading blog posts...</p>
+              </div>
+            ) : blogPosts.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-slate-400">No blog posts found. Add .txt files to the /blog directory.</p>
+              </div>
+            ) : (
+              blogPosts.map((post, index) => (
               <article
                 key={post.id}
                 className="group bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden hover:border-teal-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/20"
@@ -334,7 +395,7 @@ export default function PersonalWebsite() {
                   </button>
                 </div>
               </article>
-            ))}
+            )))}
           </div>
         </div>
       </section>
@@ -405,14 +466,14 @@ export default function PersonalWebsite() {
         </div>
       </section>
 
-      {/* Portfolio Section */}
-      <section id="portfolio" className="min-h-screen py-24 relative">
+      {/* Art Section */}
+      <section id="art" className="min-h-screen py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              Creative Portfolio
+              Creative Works
             </h2>
-            <p className="text-xl text-slate-400">Visual projects and artistic endeavors</p>
+            <p className="text-xl text-slate-400">Artistic projects and other visual works</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -445,29 +506,20 @@ export default function PersonalWebsite() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-400 text-sm">
-              © 2026 Your Name. All rights reserved.
+              © 2026 Mochi Network. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/doshuajeck"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-slate-400 hover:text-teal-400 transition-colors"
                 aria-label="GitHub"
               >
                 <Github size={20} />
-              </a>
+              </a>              
               <a
-                href="https://linkedin.com/in/yourusername"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-teal-400 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={20} />
-              </a>
-              <a
-                href="mailto:your.email@example.com"
+                href="mailto:contact@mochinetwork.net"
                 className="text-slate-400 hover:text-teal-400 transition-colors"
                 aria-label="Email"
               >

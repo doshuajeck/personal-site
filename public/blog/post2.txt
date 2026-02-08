@@ -1,0 +1,6 @@
+id |.| 2
+title |.| IN
+excerpt |.| I
+date |.| 2026-02-07
+tags |.| Coding
+readTime |.| 8 min read
