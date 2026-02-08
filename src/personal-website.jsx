@@ -34,7 +34,7 @@ export default function PersonalWebsite() {
         
         for (const file of blogFiles) {
           try {
-            const response = await fetch(`/blog/${file}`);
+            const response = await fetch(`./blog/${file}`);
             if (response.ok) {
               const content = await response.text();
               const post = parseBlogPost(content);
@@ -116,28 +116,28 @@ export default function PersonalWebsite() {
       id: 1,
       title: "Goomba",
       type: "image",
-      thumbnail: `/portfolio/goomba.jpg`,
+      thumbnail: `./portfolio/goomba.jpg`,
       description: "Created with Blender"
     },
     {
       id: 2,
       title: "Life Flask",
       type: "video",
-      thumbnail: `/portfolio/flask.jpg`,
+      thumbnail: `./portfolio/flask.jpg`,
       description: "Created with Blender"
     },
     {
       id: 3,
       title: "Mage Staff",
       type: "image",
-      thumbnail: `/portfolio/staff.jpg`,
+      thumbnail: `./portfolio/staff.jpg`,
       description: "Created with Blender"
     },
     {
       id: 4,
       title: "Neighbor",
       type: "image",
-      thumbnail: `/portfolio/neighbor.jpg`,
+      thumbnail: `./portfolio/neighbor.jpg`,
       description: "Created with Blender"
     }
   ];
