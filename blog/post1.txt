@@ -1,0 +1,6 @@
+id |.| 1
+title |.| WORK
+excerpt |.| W
+date |.| 2026-02-07
+tags |.| Coding
+readTime |.| 5 min read

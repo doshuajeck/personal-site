@@ -1,0 +1,6 @@
+id |.| 3
+title |.| PROGRESS
+excerpt |.| P
+date |.| 2026-02-07
+tags |.| coding
+readTime |.| 6 min read
