@@ -185,7 +185,7 @@ export default function PersonalWebsite() {
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:block">
+            <div className="md:block">
               <div className="ml-10 flex items-baseline space-x-8">
                 {['home', 'about', 'blog', 'projects', 'art'].map((section) => (
                   <button
@@ -203,19 +203,20 @@ export default function PersonalWebsite() {
               </div>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button 
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-slate-300 hover:text-teal-400 transition-colors"
               >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {mobileMenuOpen ? <X size={8} /> : <Menu size={8} />}
               </button>
             </div>
+            */}
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation 
         {mobileMenuOpen && (
           <div className="md:hidden bg-slate-950/98 backdrop-blur-lg border-t border-teal-500/20">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -234,7 +235,7 @@ export default function PersonalWebsite() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </nav>
 
       {/* Home Section */}
